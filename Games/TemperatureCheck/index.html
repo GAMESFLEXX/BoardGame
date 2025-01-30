@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temperature Check</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { overflow: hidden; background: black; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .gallery-container { width: 100vw; height: 100vh; overflow: hidden; position: relative; }
+        .gallery { display: flex; width: 300vw; height: 100vh; transition: transform 0.4s ease-in-out; }
+        .slide {
+            width: 100vw; height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .slide:nth-child(1) { background-color: #4CB23E; }
+        .slide:nth-child(2) { background-color: #FFBD0F; }
+        .slide:nth-child(3) { background-color: #E11A1F; }
+        .slide img { width: 100vw; height: 100vh; object-fit: cover; user-select: none; pointer-events: none; display: block; }
+        .loading-screen {
+            position: absolute;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: black;
+            display: flex; justify-content: center; align-items: center;
+            color: white; font-size: 2rem;
+            transition: opacity 0.5s ease-in-out;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-screen">Loading...</div>
+    <div class="gallery-container">
+        <div class="gallery">
+            <div class="slide">
+                <img src="images/Temp_Check_Green.png" alt="Image 1" loading="lazy">
+            </div>
+            <div class="slide">
+                <img src="images/Temp_Check_Yellow.png" alt="Image 2" loading="lazy">
+            </div>
+            <div class="slide">
+                <img src="images/Temp_Check_Red.png" alt="Image 3" loading="lazy">
+            </div>
+        </div>
+    </div>
+    <script>
+        const gallery = document.querySelector('.gallery');
+        const loadingScreen = document.querySelector('.loading-screen');
+        let startX = 0, currentIndex = 0;
+
+        function moveGallery(index) {
+            gallery.style.transform = `translateX(${-index * window.innerWidth}px)`;
+        }
+
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                loadingScreen.style.opacity = '0';
+                setTimeout(() => loadingScreen.style.display = 'none', 500);
+            }, 1000);
+        });
+
+        gallery.addEventListener('touchstart', e => startX = e.touches[0].clientX);
+        gallery.addEventListener('touchend', e => {
+            let endX = e.changedTouches[0].clientX;
+            if (startX - endX > 50) currentIndex = Math.min(currentIndex + 1, 2);
+            else if (endX - startX > 50) currentIndex = Math.max(currentIndex - 1, 0);
+            moveGallery(currentIndex);
+        });
+
+        gallery.addEventListener('mousedown', e => {
+            startX = e.clientX;
+            gallery.style.cursor = "grabbing";
+        });
+        
+        document.addEventListener('mouseup', e => {
+            let endX = e.clientX;
+            if (startX - endX > 50) currentIndex = Math.min(currentIndex + 1, 2);
+            else if (endX - startX > 50) currentIndex = Math.max(currentIndex - 1, 0);
+            moveGallery(currentIndex);
+            gallery.style.cursor = "grab";
+        });
+    </script>
+</body>
+</html>
